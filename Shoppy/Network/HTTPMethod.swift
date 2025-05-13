@@ -25,3 +25,14 @@ struct Endpoint {
         return components?.url
     }
 }
+
+extension Endpoint {
+    static func allProducts() -> Endpoint {
+        Endpoint(
+            path: "/products",
+            method: .get,
+            queryItems: nil,
+            headers: nil
+        )
+    }
+}
