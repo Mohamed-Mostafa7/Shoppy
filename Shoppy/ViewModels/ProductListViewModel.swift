@@ -14,6 +14,7 @@ class ProductListViewModel {
     private let coordinator: ProductCoordinator
     private var allProducts: [Product] = []
     @Published var displayedProducts: [Product] = []
+    @Published var isGridLayout = true
     private var currentOffset = 0
     private let limit = 7
 
