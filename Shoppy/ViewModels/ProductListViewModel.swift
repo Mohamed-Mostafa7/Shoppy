@@ -11,13 +11,19 @@ import Foundation
 @MainActor
 class ProductListViewModel {
     private let apiService: APIServiceProtocol
+    private let coordinator: ProductCoordinator
     private var allProducts: [Product] = []
     @Published var displayedProducts: [Product] = []
     private var currentOffset = 0
     private let limit = 7
 
-    init(apiService: APIServiceProtocol) {
+    init(apiService: APIServiceProtocol, coordinator: ProductCoordinator) {
         self.apiService = apiService
+        self.coordinator = coordinator
+    }
+    
+    func pushToDetailsView(product: Product) {
+        coordinator.showProductDetails(for: product)
     }
 
     func loadProducts() async {

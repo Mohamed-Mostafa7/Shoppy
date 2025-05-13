@@ -10,16 +10,24 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
+    var appCoordinator: AppCoordinator?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        
-        guard let windowScene = (scene as? UIWindowScene) else {return}
+        guard let windowScene = (scene as? UIWindowScene) else { return }
+
         let window = UIWindow(windowScene: windowScene)
-        let viewModel = ProductListViewModel(apiService: APIService())
-        window.rootViewController = UINavigationController(rootViewController: ProductsViewController(viewModel: viewModel))
+        let appCoordinator = AppCoordinator(window: window)
+        appCoordinator.start()
+
+        self.appCoordinator = appCoordinator
         self.window = window
-        self.window?.makeKeyAndVisible()
+        
+//        guard let windowScene = (scene as? UIWindowScene) else {return}
+//        let window = UIWindow(windowScene: windowScene)
+//        let viewModel = ProductListViewModel(apiService: APIService())
+//        window.rootViewController = UINavigationController(rootViewController: ProductsViewController(viewModel: viewModel))
+//        self.window = window
+//        self.window?.makeKeyAndVisible()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
