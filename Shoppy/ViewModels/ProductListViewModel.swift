@@ -12,11 +12,14 @@ import Foundation
 class ProductListViewModel {
     private let apiService: APIServiceProtocol
     private let coordinator: ProductCoordinator
-    private var allProducts: [Product] = []
+    
     @Published var displayedProducts: [Product] = []
     @Published var isGridLayout = true
-    private var currentOffset = 0
+    
+    private var currentOffset = 1
     private let limit = 7
+    var allProductLoaded = false
+    var isLoading = false
 
     init(apiService: APIServiceProtocol, coordinator: ProductCoordinator) {
         self.apiService = apiService
@@ -27,28 +30,40 @@ class ProductListViewModel {
         coordinator.showProductDetails(for: product)
     }
 
-    func loadProducts() async {
+    private func loadProducts(limit: Int) async {
         do {
             let products: [Product] = try await apiService.request(
-                endpoint: .allProducts(),
+                endpoint: .allProducts(limit: limit),
                 responseModel: [Product].self
             )
-            print("success")
-            for product in products {
-                print(product.id)
-                print(product.title)
+            currentOffset += 1
+            /// if the displayed products equal the fetched products that means that we reached the end of the products and there is no more products.
+            /// so we disable loading more funcion for better user experience.
+            if displayedProducts.count == products.count {
+                allProductLoaded = true
+            } else {
+                displayedProducts = products
             }
-            allProducts = products
-            loadMore()
         } catch {
             print("Error fetching products: \(error)")
         }
     }
 
+    // MARK: - Data
+     func loadData() {
+        Task {
+            isLoading = true
+            await loadProducts(limit: limit)
+            isLoading = false
+        }
+    }
+    
     func loadMore() {
-        guard currentOffset < allProducts.count else { return }
-        let nextBatch = allProducts[currentOffset..<min(currentOffset + limit, allProducts.count)]
-        displayedProducts.append(contentsOf: nextBatch)
-        currentOffset += limit
+        let newLimit = limit * currentOffset
+        Task {
+            isLoading = true
+            await loadProducts(limit: newLimit)
+            isLoading = false
+        }
     }
 }

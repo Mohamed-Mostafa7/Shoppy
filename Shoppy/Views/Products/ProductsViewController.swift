@@ -31,7 +31,7 @@ class ProductsViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         bindViewModel()
-        loadData()
+        viewModel.loadData()
     }
     
     // MARK: - Setup
@@ -90,13 +90,6 @@ class ProductsViewController: UIViewController {
             .store(in: &cancellables)
     }
     
-    // MARK: - Data
-    private func loadData() {
-        Task {
-            await viewModel.loadProducts()
-        }
-    }
-    
     // MARK: - Layout
     private func createLayout(isGrid: Bool) -> UICollectionViewFlowLayout {
         let layout = UICollectionViewFlowLayout()
@@ -135,6 +128,17 @@ extension ProductsViewController: UICollectionViewDataSource {
 
 // MARK: - UICollectionViewDelegate
 extension ProductsViewController: UICollectionViewDelegate {
-    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.frame.size.height
+        
+        // Prevent triggering when content height is too small
+        guard contentHeight > height, !viewModel.isLoading else { return }
+        
+        if offsetY >= contentHeight - height {
+            viewModel.loadMore()
+        }
+    }
 }
 
