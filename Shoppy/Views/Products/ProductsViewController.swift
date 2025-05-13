@@ -57,6 +57,12 @@ class ProductsViewController: UIViewController {
             UINib(nibName: ProductCollectionViewCell.reuseIdentifier, bundle: nil),
             forCellWithReuseIdentifier: ProductCollectionViewCell.reuseIdentifier
         )
+        collectionView.register(
+            UINib(nibName: LoadingFooterView.reuseIdentifier, bundle: nil),
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
+            withReuseIdentifier: LoadingFooterView.reuseIdentifier
+        )
+        
     }
     
     // MARK: - Actions
@@ -86,6 +92,13 @@ class ProductsViewController: UIViewController {
                 
                 let visibleIndexPaths = self.collectionView.indexPathsForVisibleItems
                 self.collectionView.reloadItems(at: visibleIndexPaths)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$isLoading
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.collectionView.reloadSections(IndexSet(integer: 0))
             }
             .store(in: &cancellables)
     }
@@ -124,6 +137,26 @@ extension ProductsViewController: UICollectionViewDataSource {
         cell.configure(product: product, isGrid: viewModel.isGridLayout)
         return cell
     }
+    /// add footer if loading
+    func collectionView(_ collectionView: UICollectionView,
+                        viewForSupplementaryElementOfKind kind: String,
+                        at indexPath: IndexPath) -> UICollectionReusableView {
+        guard kind == UICollectionView.elementKindSectionFooter else {
+            return UICollectionReusableView()
+        }
+        
+        if viewModel.isLoading {
+            let footer = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: LoadingFooterView.reuseIdentifier,
+                for: indexPath
+            ) as! LoadingFooterView
+            return footer
+        }
+        
+        return UICollectionReusableView()
+    }
+    
 }
 
 // MARK: - UICollectionViewDelegate
@@ -137,8 +170,17 @@ extension ProductsViewController: UICollectionViewDelegate {
         guard contentHeight > height, !viewModel.isLoading else { return }
         
         if offsetY >= contentHeight - height {
+            guard !viewModel.allProductLoaded else { return }
             viewModel.loadMore()
         }
     }
 }
 
+// MARK: - UICollectionViewDelegateFlowLayout
+extension ProductsViewController:  UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        referenceSizeForFooterInSection section: Int) -> CGSize {
+        return viewModel.isLoading ? CGSize(width: collectionView.frame.width, height: 50) : .zero
+    }
+}

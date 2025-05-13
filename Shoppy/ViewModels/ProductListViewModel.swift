@@ -15,11 +15,11 @@ class ProductListViewModel {
     
     @Published var displayedProducts: [Product] = []
     @Published var isGridLayout = true
+    @Published var isLoading = false
     
     private var currentOffset = 1
     private let limit = 7
     var allProductLoaded = false
-    var isLoading = false
 
     init(apiService: APIServiceProtocol, coordinator: ProductCoordinator) {
         self.apiService = apiService
@@ -31,6 +31,7 @@ class ProductListViewModel {
     }
 
     private func loadProducts(limit: Int) async {
+        print("all product loaded: \(allProductLoaded)")
         do {
             let products: [Product] = try await apiService.request(
                 endpoint: .allProducts(limit: limit),
