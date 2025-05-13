@@ -6,24 +6,39 @@
 //
 
 import UIKit
+import Combine
 
 class ProductsViewController: UIViewController {
-
+    
+    let viewModel: ProductListViewModel
+    private var cancellables = Set<AnyCancellable>()
+    
+    init(viewModel: ProductListViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: "ProductsViewController", bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .red
         title = "Products"
+        
+        bindViewModel()
+        Task {
+            await viewModel.loadProducts()
+        }
     }
-
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    
+    private func bindViewModel() {
+        viewModel.$displayedProducts
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                print(self?.viewModel.displayedProducts ?? "no products")
+            }
+            .store(in: &cancellables)
     }
-    */
-
+    
 }
