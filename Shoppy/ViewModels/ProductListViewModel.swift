@@ -17,6 +17,7 @@ class ProductListViewModel {
     @Published var displayedProducts: [Product] = []
     @Published var isGridLayout = true
     @Published var isLoading = false
+    @Published var noInternet = false
     
     private var currentOffset = 1
     private let limit = 7
@@ -83,6 +84,7 @@ extension ProductListViewModel {
             print("Invalid URL. Please check the endpoint.")
         case .noInternet:
             // MARK: - show the cashed data
+            noInternet = true
             print("No internet connection. Please try again later.")
         case .unauthorized:
             print("Unauthorized access. Please log in again.")
