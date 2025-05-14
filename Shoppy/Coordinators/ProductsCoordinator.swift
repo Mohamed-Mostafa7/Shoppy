@@ -21,8 +21,8 @@ final class ProductCoordinator: @preconcurrency Coordinator {
     }
 
     func showProductDetails(for product: Product) {
-//        let detailsViewModel = ProductDetailsViewModel(product: product)
-//        let detailsVC = ProductDetailsViewController(viewModel: detailsViewModel)
-//        navigationController.pushViewController(detailsVC, animated: true)
+        let detailsViewModel = ProductDetailsViewModel(product: product)
+        let detailsVC = ProductDetailsViewController(viewModel: detailsViewModel)
+        navigationController.pushViewController(detailsVC, animated: true)
     }
 }
