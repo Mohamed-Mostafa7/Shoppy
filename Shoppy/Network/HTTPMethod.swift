@@ -27,11 +27,11 @@ struct Endpoint {
 }
 
 extension Endpoint {
-    static func allProducts() -> Endpoint {
+    static func allProducts(limit: Int) -> Endpoint {
         Endpoint(
             path: "/products",
             method: .get,
-            queryItems: nil,
+            queryItems: [URLQueryItem(name: "limit", value: "\(limit)")],
             headers: nil
         )
     }
