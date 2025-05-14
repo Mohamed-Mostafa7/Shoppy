@@ -161,6 +161,12 @@ extension ProductsViewController: UICollectionViewDataSource {
 
 // MARK: - UICollectionViewDelegate
 extension ProductsViewController: UICollectionViewDelegate {
+    /// handle tapping to go to the details view
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let product = viewModel.displayedProducts[indexPath.row]
+        viewModel.pushToDetailsView(product: product)
+    }
+    /// handle scrolling to fetch new products
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
