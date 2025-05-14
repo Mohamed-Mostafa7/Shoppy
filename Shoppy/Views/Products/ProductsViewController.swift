@@ -31,6 +31,7 @@ class ProductsViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         bindViewModel()
+        viewModel.loadProductsFromCache()
         viewModel.loadData()
     }
     
@@ -85,11 +86,7 @@ class ProductsViewController: UIViewController {
             .receive(on: RunLoop.main)
             .sink { [weak self] isGrid in
                 guard let self = self else { return }
-                
-                UIView.animate(withDuration: 0.4) {
-                    self.collectionView.setCollectionViewLayout(self.createLayout(isGrid: isGrid), animated: true)
-                }
-                
+                self.collectionView.setCollectionViewLayout(self.createLayout(isGrid: isGrid), animated: true)
                 let visibleIndexPaths = self.collectionView.indexPathsForVisibleItems
                 self.collectionView.reloadItems(at: visibleIndexPaths)
             }
@@ -167,19 +164,36 @@ extension ProductsViewController: UICollectionViewDelegate {
         viewModel.pushToDetailsView(product: product)
     }
     /// handle scrolling to fetch new products
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        let offsetY = scrollView.contentOffset.y
+//        let contentHeight = scrollView.contentSize.height
+//        let height = scrollView.frame.size.height
+//        
+//        // Prevent triggering when content height is too small
+//        guard contentHeight > height, !viewModel.isLoading else { return }
+//        
+//        if offsetY >= contentHeight - height {
+//            guard !viewModel.allProductLoaded else { return }
+//            viewModel.loadMore()
+//        }
+//    }
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
         let height = scrollView.frame.size.height
         
-        // Prevent triggering when content height is too small
-        guard contentHeight > height, !viewModel.isLoading else { return }
-        
-        if offsetY >= contentHeight - height {
-            guard !viewModel.allProductLoaded else { return }
+        // Prevent triggering when content height is too small or loading is in progress
+        guard contentHeight > height,
+              !viewModel.isLoading,
+              !viewModel.allProductLoaded else { return }
+
+        // Trigger load more only once when near the bottom
+        if offsetY > contentHeight - height - 100 {
+            viewModel.isLoading = true
             viewModel.loadMore()
         }
     }
+
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
