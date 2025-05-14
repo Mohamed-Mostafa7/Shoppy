@@ -10,7 +10,9 @@ import UIKit
 class ProductCollectionViewCell: UICollectionViewCell {
     
     static let reuseIdentifier = "ProductCollectionViewCell"
-
+    
+    private var imageLoader: ImageLoader?
+    
     @IBOutlet weak var image: UIImageView!
     @IBOutlet weak var mainStack: UIStackView!
     @IBOutlet weak var title: UILabel!
@@ -21,12 +23,18 @@ class ProductCollectionViewCell: UICollectionViewCell {
         
     }
     
-    func configure(product: Product, isGrid: Bool) {
+    func configure(product: Product, isGrid: Bool, imageLoader: ImageLoader = KingfisherImageLoader()) {
+        self.imageLoader = imageLoader
+        let placeholder = UIImage(named: "placeholder")
+        
+        if let imageUrl = URL(string: product.image) {
+            imageLoader.loadImage(from: imageUrl, into: image, placeholder: placeholder)
+        }
+        
         title.text = product.title
         price.text = "\(product.price)$"
+        
         mainStack.axis = isGrid ? .vertical : .horizontal
-        mainStack.setNeedsLayout()
-        mainStack.layoutIfNeeded()
     }
     
 }
