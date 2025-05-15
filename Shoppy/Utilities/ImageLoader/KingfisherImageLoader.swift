@@ -21,15 +21,15 @@ class KingfisherImageLoader: @preconcurrency ImageLoader {
             options: [
                 .transition(.fade(0.3)),
                 .cacheOriginalImage
-            ],
-            completionHandler: { result in
-                switch result {
-                case .success(let value):
-                    print("Image loaded: \(value.source.url?.absoluteString ?? "")")
-                case .failure(let error):
-                    print("Image loading failed: \(error)")
-                }
-            }
+            ]
+//            completionHandler: { result in
+//                switch result {
+//                case .success(let value):
+//                    print("Image loaded: \(value.source.url?.absoluteString ?? "")")
+//                case .failure(let error):
+//                    print("Image loading failed: \(error)")
+//                }
+//            }
         )
     }
 }
