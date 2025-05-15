@@ -56,7 +56,7 @@ class ProductListViewModel {
 
 extension ProductListViewModel {
 
-    private func loadProducts(limit: Int) async {
+     func loadProducts(limit: Int) async {
         do {
             let products: [Product] = try await apiService.request(
                 endpoint: .allProducts(limit: limit),
