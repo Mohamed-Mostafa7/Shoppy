@@ -6,7 +6,7 @@
 //
 import UIKit
 
-final class ProductCoordinator: @preconcurrency Coordinator {
+class ProductCoordinator: @preconcurrency Coordinator {
     var navigationController: UINavigationController
 
     init(navigationController: UINavigationController) {
