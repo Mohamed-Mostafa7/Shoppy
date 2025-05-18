@@ -43,7 +43,7 @@ class ProductDetailsViewController: UIViewController {
         }
         productTitle.text = viewModel.product.title
         productPrice.text = "\(viewModel.product.price)$"
-        productRating.text = "\(viewModel.product.rating)⭐️"
+        productRating.text = "\(viewModel.product.rating.rate) ⭐️"
         productDescription.text = viewModel.product.description
     }
 
